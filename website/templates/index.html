@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="jumbotron jumbotron-fluid" style="/* background-image: url('elephant.jpg'); background-size: cover; */">
+  <div class="container">
+    <h1 class="display-4">Fluid jumbotron</h1>
+    <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+    <hr class="my-4">
+    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+    <a class="btn btn-success btn-lg" href="#" role="button">Learn more</a>
+  </div><!-- container -->
+</div><!-- jumbotron -->
+<div class="container">
+
+  <div class="row">
+    <div class="col">
+      One col below jumbo
+    </div>
+  </div> <!-- row -->
+  
+  <div class="row">
+    <div class="col-sm-4">
+      One of three columns
+    </div>
+    <div class="col-sm-4">
+      One of three columns
+    </div>
+    <div class="col-sm-4">
+      One of three columns
+    </div>
+  </div> <!-- row -->
+</div><!-- container -->
+{% endblock %}
