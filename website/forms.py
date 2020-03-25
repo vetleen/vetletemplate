@@ -7,9 +7,11 @@ class SignUpForm(forms.Form):
     confirm_password = forms.CharField(max_length = 20, label="Confrim password", widget=forms.TextInput(attrs={'type':'password'}))
 
     def clean(self):
-        if User.objects.filter(username=self.cleaned_data['username']).exists():
+        if 'username' in self.cleaned_data:
+            if User.objects.filter(username=self.cleaned_data['username']).exists():
+                raise forms.ValidationError(u'Did you provide a valid email? (You tried: "%s").' % self.cleaned_data['username'])
+        else:
             raise forms.ValidationError(u'Oh no! Someone already signed up with that email ("%s").' % self.cleaned_data['username'])
-
         if 'password' in self.cleaned_data and 'confirm_password' in self.cleaned_data:
             if self.cleaned_data['password'] != self.cleaned_data['confirm_password']:
                 raise forms.ValidationError("The second password you entered did not match the first. Please try again.")
