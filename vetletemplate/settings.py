@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '2#q*c)!_g3tw2vj_p%7+rjyq+taizi
 # SECURITY WARNING: don't run with debug turned on in production!
 
 DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '*.herokuapp.com'] #should probs specify when a sub-domain is created in heroku
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'vetletemplate.herokuapp.com'] #should probs specify when a sub-domain is created in heroku
 
 
 # Application definition
