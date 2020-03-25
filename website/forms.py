@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.validators import validate_email
 
 class SignUpForm(forms.Form):
     username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
@@ -9,16 +10,13 @@ class SignUpForm(forms.Form):
     def clean(self):
         if 'username' in self.cleaned_data:
             if User.objects.filter(username=self.cleaned_data['username']).exists():
-                raise forms.ValidationError(u'Did you provide a valid email? (You tried: "%s").' % self.cleaned_data['username'])
-        else:
-            raise forms.ValidationError(u'Oh no! Someone already signed up with that email ("%s").' % self.cleaned_data['username'])
-        if 'password' in self.cleaned_data and 'confirm_password' in self.cleaned_data:
-            if self.cleaned_data['password'] != self.cleaned_data['confirm_password']:
-                raise forms.ValidationError("The second password you entered did not match the first. Please try again.")
+                raise forms.ValidationError(u'Oh no! Someone already signed up with that email ("%s").' % self.cleaned_data['username'])
 
-        return self.cleaned_data
+            if 'password' in self.cleaned_data and 'confirm_password' in self.cleaned_data:
+                if self.cleaned_data['password'] != self.cleaned_data['confirm_password']:
+                    raise forms.ValidationError("The second password you entered did not match the first. Please try again.")
 
-
+            return self.cleaned_data
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(max_length = 20, widget=forms.TextInput(attrs={'type':'password', 'placeholder':'Old Password'}))
