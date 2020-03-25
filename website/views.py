@@ -16,7 +16,6 @@ from django.contrib.auth import update_session_auth_hash, login
 
 #from catalog.models import ...
 
-
 # Create your views here.
 def index(request):
     """View function for home page of site."""
