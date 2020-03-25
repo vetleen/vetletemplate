@@ -121,7 +121,7 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
-#CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 #SESSION_COOKIE_SECURE = True
 
 # Heroku: Update database configuration from $DATABASE_URL.
