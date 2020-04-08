@@ -29,3 +29,9 @@ class ChangePasswordForm(forms.Form):
             if self.cleaned_data['new_password'] != self.cleaned_data['confirm_new_password']:
                 raise forms.ValidationError("The second new password you entered did not match the first. Please try again.")
         return self.cleaned_data
+
+class LoginForm(forms.Form):
+    username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
+    password = forms.CharField(max_length = 20, label="Password", widget=forms.TextInput(attrs={'type':'password'}))
+    def clean(self):
+        return self.cleaned_data
