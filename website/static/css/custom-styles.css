@@ -1,1 +1,13 @@
 # create custom css here
+
+
+.jumbotron-fluid{
+
+      }
+
+
+      .jumbotron{
+                          background-image: url('../images/front-page-banner.png');
+                          background-size: cover;
+
+            }
