@@ -1,0 +1,44 @@
+##Vetletemplate:
+
+add ability to edit account
+landing page unaccessable when logged in? some other page visible?
+translations
+add testing: all pages loading properly, all forms working, login and out works, creating and deleting users works, create test-model to to test that db is fine?
+try heroku pipeline for deploy
+add 404-pages etc.
+
+
+favicon
+support for ?next= on login,
+check all the success-templates, shold ther ebe more in them? like, prompt to log in again?
+More content on footer? (contact info, about us, blog?)
+fix html indentations?
+
+
+
+##MeAndMyTeam
+
+#programming
+add product model and related view logic
+add plans to sign-up-process
+add support for manually adding employees
+add data visuallization on web
+add report-generator
+
+#fun stuff
+design logo
+add screenshots to show of products on front page
+create "customers" for social-proof bar
+add impact stories to front page, and possibly own page
+add about us explaining scientific background of test (if any...)
+
+
+#external services
+pick and connect domain
+set up basic email
+email-integration and password reset
+chat-box
+stripe-integration
+SEO?
+Google ads
+get someone to check that deploy is good
