@@ -1,6 +1,7 @@
 {% extends "base_generic.html" %}
-
+{% load static %}
 {% block content %}
+<!-- Front page banner begins -->
 <div class="jumbotron jumbotron-fluid" style="">
   <div class="container">
     <div class="row">
@@ -11,29 +12,55 @@
             <!-- Software to help you increase employee satisfaction and loyalty. -->
             Automatic employee satisfaction tracking.
           </p><br />
-        <a class="btn btn-warning btn-lg" href="#" role="button">Try for free</a>
+        <a class="btn btn-warning btn-lg" href="{% url 'sign-up'%}" role="button">Try for free</a>
         <p class="text-white"><small>Pick a plan, cancel anytime.</small></p>
       </div> <!-- col -->
     </div><!-- row -->
   </div><!-- container -->
 </div><!-- jumbotron -->
+
+<!-- Social proof box begins -->
+<div class="social-proof">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-2 lead text-center">
+        &nbsp;
+      </div> <!-- col -->
+      <div class="col-sm-2 lead text-center">
+        A+ Realestate
+      </div> <!-- col -->
+      <div class="col-sm-2 lead text-center">
+        Busy B Business
+      </div> <!-- col -->
+      <div class="col-sm-2 lead text-center">
+        Cee Corp.
+      </div> <!-- col -->
+      <div class="col-sm-2 lead text-center">
+        Double DeeDee's
+      </div> <!-- col -->
+      <div class="col-sm-2 lead text-center">
+        &nbsp;
+      </div> <!-- col -->
+    </div><!-- row -->
+  </div><!-- container -->
+</div>
 <div class="container">
 
   <div class="row">
-    <div class="col">
-      One col below jumbo
+    <div class="col-sm-4 text-center pt-5">
+      <h6><strong>Add employees to the tracker</strong></h6>
+      <img src="{% static 'images/survey-employees.svg' %}" class="img-fluid" width="50%" alt="Add employees that you want to track." />
+      <p>Add each employee who's satisfaction you want to track. All we need is an email address.</p>
     </div>
-  </div> <!-- row -->
-
-  <div class="row">
-    <div class="col-sm-4">
-      One of three columns
+    <div class="col-sm-4 text-center pt-5">
+      <h6><strong>Employees answer quarterly survey</strong></h6>
+      <img src="{% static 'images/employees-respond-to-survey.svg' %}" class="img-fluid" width="50%" alt="Employees answer simple questions." />
+      <p>Each employee receives a quartely (or you can set a custom interval) survey with key questions regarding their satisfaction. </p>
     </div>
-    <div class="col-sm-4">
-      One of three columns
-    </div>
-    <div class="col-sm-4">
-      One of three columns
+    <div class="col-sm-4 text-center pt-5">
+      <h6><strong>Always be up to date</strong></h6>
+      <img src="{% static 'images/analyze-employee-data.svg' %}" class="img-fluid" width="50%" alt="Access beautifully processed data about employee satisfaction." />
+      <p>Data is analysed automatically, and can be compared over time. We even give suggestions for how to make improvements to your lowest scores. </p>
     </div>
   </div> <!-- row -->
 </div><!-- container -->
