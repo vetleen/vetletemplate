@@ -5,7 +5,7 @@ from django.core.validators import validate_email
 class SignUpForm(forms.Form):
     username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
     password = forms.CharField(max_length = 20, label="Password", widget=forms.TextInput(attrs={'type':'password'}))
-    confirm_password = forms.CharField(max_length = 20, label="Confrim password", widget=forms.TextInput(attrs={'type':'password'}))
+    confirm_password = forms.CharField(max_length = 20, label="Confirm password", widget=forms.TextInput(attrs={'type':'password'}))
 
     def clean(self):
         if 'username' in self.cleaned_data:
@@ -35,3 +35,12 @@ class LoginForm(forms.Form):
     password = forms.CharField(max_length = 20, label="Password", widget=forms.TextInput(attrs={'type':'password'}))
     def clean(self):
         return self.cleaned_data
+
+class EditAccountForm(forms.Form):
+    username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
+
+    def clean(self):
+        if 'username' in self.cleaned_data:
+            if User.objects.filter(username=self.cleaned_data['username']).exists():
+                raise forms.ValidationError(u'Oh no! Someone already signed up with that email ("%s").' % self.cleaned_data['username'])
+            return self.cleaned_data

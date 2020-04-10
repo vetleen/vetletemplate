@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from website.forms import ChangePasswordForm, SignUpForm, LoginForm
+from website.forms import ChangePasswordForm, SignUpForm, LoginForm, EditAccountForm
 from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
@@ -14,6 +14,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash, login, authenticate
 from django.contrib import auth
+
+from django.contrib import messages
 #from catalog.models import ...
 
 # Create your views here.
@@ -115,22 +117,22 @@ def login_view(request):
 
     #If we receive POST data
     if request.method == 'POST':
-        print("Received post request")
+        #print("Received post request")
         # Create a form instance and populate it with data from the request (binding):
         form = LoginForm(request.POST)
         # Check if the form is valid:
         if form.is_valid():
-            print("form was valid")
+            #print("form was valid")
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            print("username was: %s and password: " % username, password)
+            #print("username was: %s and password: " % username, password)
             user = authenticate(request, username=username, password=password)
             if user is not None:
-                print("user was not none")
+                #print("user was not none")
                 auth.login(request, user)
-                print("user is: %s" % request.user)
-                print("user is authenticated?: %s" % request.user.is_authenticated)
+                #print("user is: %s" % request.user)
+                #print("user is authenticated?: %s" % request.user.is_authenticated)
                 return HttpResponseRedirect(reverse('login-complete'))
 
     # If this is a GET (or any other method) create the default form.
@@ -158,3 +160,28 @@ def logout_view(request):
     }
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'logout_complete.html', context=context)
+
+@login_required
+def edit_account_view(request):
+    """View function for editing account"""
+    if request.user.is_authenticated:
+        #If we receive POST data
+        if request.method == 'POST':
+            # Create a form instance and populate it with data from the request (binding):
+            form = EditAccountForm(request.POST)
+            # Check if the form is valid:
+            if form.is_valid():
+                #print("form was valid")
+                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+                new_username = form.cleaned_data['username']
+                request.user.username = new_username
+                request.user.email = new_username
+                request.user.save()
+                messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
+                return render(request, 'edit_account_form.html')
+        return render(request, 'edit_account_form.html')
+    #if user not authenticated
+    else:
+        #this should never occcur
+        messages.error(request, "Can't edit profile when you are not logged in.")
+        return HttpResponseRedirect(reverse('login-view'))

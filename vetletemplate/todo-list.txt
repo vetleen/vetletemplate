@@ -11,6 +11,7 @@ add 404-pages etc.
 favicon
 support for ?next= on login,
 check all the success-templates, shold ther ebe more in them? like, prompt to log in again?
+fix buttons and classes in all forms using widgets
 More content on footer? (contact info, about us, blog?)
 fix html indentations?
 
