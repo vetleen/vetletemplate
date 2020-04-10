@@ -141,13 +141,15 @@ def logout_view(request):
 def edit_account_view(request):
     """View function for editing account"""
     if request.user.is_authenticated:
+        form = EditAccountForm(initial={'username': request.user})
         #If we receive POST data
         context = {
-            'foo': 'bar',
+            'form': form
         }
         if request.method == 'POST':
             # Create a form instance and populate it with data from the request (binding):
             form = EditAccountForm(request.POST)
+            context.update({'form': form})
             # Check if the form is valid:
             if form.is_valid():
                 #print("form was valid")
@@ -157,16 +159,18 @@ def edit_account_view(request):
                 request.user.email = new_username
                 request.user.save()
                 messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
-                return render(request, 'edit_account_form.html')
+                return render(request, 'form_renderer.html', context)
             else:
+                pass
                 #create error-messaged
-                my_errors = form.errors.as_data()
-                my_errors = my_errors['__all__']
-                for v_error in my_errors:
-                    for error_string in v_error:
-                        messages.error(request, error_string, extra_tags='alert alert-danger')
-                        
-        return render(request, 'edit_account_form.html', context)
+                #my_errors = form.errors.as_data()
+                #print(my_errors)
+                #my_errors = my_errors['__all__']
+                #for v_error in my_errors:
+                #    for error_string in v_error:
+                #        messages.error(request, error_string, extra_tags='alert alert-danger')
+
+        return render(request, 'form_renderer.html', context)
     #if user not authenticated
     else:
         #this should never occcur

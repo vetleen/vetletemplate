@@ -5,8 +5,8 @@ from django.core.validators import validate_email
 from django.contrib import messages
 
 class SignUpForm(forms.Form):
-    username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
-    password = forms.CharField(max_length = 20, label="Password", widget=forms.TextInput(attrs={'type':'password'}))
+    username = forms.EmailField(max_length = 150, label="Email address", widget=forms.TextInput(attrs={'type':'input'}))
+    password = forms.CharField(max_length = 20, label="Choose a password", widget=forms.TextInput(attrs={'type':'password'}))
     confirm_password = forms.CharField(max_length = 20, label="Confirm password", widget=forms.TextInput(attrs={'type':'password'}))
 
     def clean(self):
@@ -26,9 +26,9 @@ class SignUpForm(forms.Form):
             return self.cleaned_data
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(max_length = 20, widget=forms.TextInput(attrs={'type':'password', 'placeholder':'Old Password'}))
-    new_password = forms.CharField(max_length = 20, widget=forms.TextInput(attrs={'type':'password', 'placeholder':'New Password'}))
-    confirm_new_password = forms.CharField(max_length = 20, widget=forms.TextInput(attrs={'type':'password', 'placeholder':'Confirm New Password'}))
+    old_password = forms.CharField(max_length = 20, label="Current password",widget=forms.TextInput(attrs={'type':'password', 'placeholder':'Old Password'}))
+    new_password = forms.CharField(max_length = 20, label="Enter a new password",widget=forms.TextInput(attrs={'type':'password', 'placeholder':'New Password'}))
+    confirm_new_password = forms.CharField(max_length = 20, label="Confirm new password", widget=forms.TextInput(attrs={'type':'password', 'placeholder':'Confirm New Password'}))
 
 
     def clean(self):
@@ -41,13 +41,13 @@ class ChangePasswordForm(forms.Form):
         return self.cleaned_data
 
 class LoginForm(forms.Form):
-    username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
+    username = forms.EmailField(max_length = 150, label="Email address", widget=forms.TextInput(attrs={'type':'input'}))
     password = forms.CharField(max_length = 20, label="Password", widget=forms.TextInput(attrs={'type':'password'}))
     def clean(self):
         return self.cleaned_data
 
 class EditAccountForm(forms.Form):
-    username = forms.EmailField(max_length = 150, label="Email", widget=forms.TextInput(attrs={'type':'input'}))
+    username = forms.EmailField(max_length = 150, label="Email address", help_text="You email is also your username.", widget=forms.TextInput(attrs={'type':'email'}))
 
     def clean(self):
         if 'username' in self.cleaned_data:
