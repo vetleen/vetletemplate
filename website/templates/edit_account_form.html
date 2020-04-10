@@ -6,33 +6,21 @@
     <div class="col-sm-12">
       <h3> Change account details </h3>
     </div>
-
-      {% if messages %}
-          {% for message in messages %}
-          <div  class="{% if message.tags %}{{ message.extra_tags }} {% endif %} col-sm-6" role="alert">
-            {{ message }}
-          </div>
-          <div  class="col-sm-6">
-            &nbsp;
-          </div>
-          {% endfor %}
-      {% endif %}
   </div> <!-- row -->
-  <div class="col-6">
-        <form method="post">
-            {% csrf_token %}
-          <div class="form-group">
-            <label for="InputEmail">Email address</label>
-            <input type="email" name="username" maxlength="150" required placeholder="{{ request.user.username }}" class="form-control" id="InputEmail" aria-describedby="emailHelp">
-            <small id="emailHelp" class="form-text text-muted">Your email is also your username.</small>
-          </div>
-          <button type="submit"  class="btn btn-primary">Update account details</button>
-        </form>
-      </div><!-- col -->
-      <div  class="col-sm-6">
-        &nbsp;
-      </div> <!-- col -->
-    </div> <!-- row -->
+  {% include "includeable/message_displayer.html" %}
+  <div class="row">
+    <div class="col-6">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="InputEmail">Email address</label>
+          <input type="email" name="username" maxlength="150" required placeholder="{{ request.user.username }}" class="form-control" id="InputEmail" aria-describedby="emailHelp">
+          <small id="emailHelp" class="form-text text-muted">Your email is also your username.</small>
+        </div>
+        <button type="submit"  class="btn btn-primary">Update account details</button>
+      </form>
+    </div><!-- col -->
+  </div> <!-- row -->
 </div><!-- container -->
 
 {% endblock %}

@@ -21,7 +21,8 @@ from django.contrib import messages
 # Create your views here.
 def index(request):
     """View function for home page of site."""
-
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('dashboard'))
     context = {
         'foo': 'bar',
     }
@@ -47,7 +48,8 @@ def change_password(request):
             user.save()
             update_session_auth_hash(request, request.user)
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('password_change_done'))
+            messages.success(request, 'Your password was changed.', extra_tags='alert alert-success')
+            return render(request, 'you_did_something.html')
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -60,19 +62,12 @@ def change_password(request):
 
     return render(request, 'password_change_form.html', context)
 
-def password_change_done(request):
-    """View function showing success message after login."""
-    context = {
-        'foo': 'bar',
-    }
-    # Render the HTML template index.html with the data in the context variable
-    return render(request, 'password_change_done.html', context=context)
-
 def sign_up(request):
     """View function for signing up."""
     #logged in users are redirected
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('sign-up-complete'))
+        messages.error(request, 'You are already signed up.', extra_tags='alert alert-warning')
+        return render(request, 'you_did_something.html')
 
     # If this is a POST request then process the Form data
     if request.method == 'POST':
@@ -85,10 +80,12 @@ def sign_up(request):
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             user = User.objects.create_user(form.cleaned_data['username'], form.cleaned_data['username'], form.cleaned_data['password'])
             user.save()
+            messages.success(request, 'Welcome aboard. Check out your dashboard next?.', extra_tags='alert alert-success')
             if user is not None:
                 auth.login(request, user)
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('sign-up-complete'))
+
+            return render(request, 'you_did_something.html')
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -99,21 +96,11 @@ def sign_up(request):
 
     return render(request, 'sign_up_form.html', context)
 
-def sign_up_complete(request):
-    """View function showing success message after signup."""
-
-    context = {
-        'foo': 'bar',
-    }
-
-    # Render the HTML template index.html with the data in the context variable
-    return render(request, 'sign_up_complete.html', context=context)
-
 def login_view(request):
     #is user already logged in?
     if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('login-complete'))
-        print("user was already logged in")
+        messages.error(request, 'You are already logged in.', extra_tags='alert alert-error')
+        return render(request, 'you_did_something.html')
 
     #If we receive POST data
     if request.method == 'POST':
@@ -133,7 +120,8 @@ def login_view(request):
                 auth.login(request, user)
                 #print("user is: %s" % request.user)
                 #print("user is authenticated?: %s" % request.user.is_authenticated)
-                return HttpResponseRedirect(reverse('login-complete'))
+                messages.success(request, 'You have logged in.', extra_tags='alert alert-success')
+                return render(request, 'you_did_something.html')
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -143,29 +131,20 @@ def login_view(request):
     }
     return render(request, 'login_form.html', context)
 
-def login_complete(request):
-    print("IN login_complete_view: user is authenticated?: %s" % request.user.is_authenticated)
-    """View function showing success message after login."""
-    context = {
-        'foo': 'bar',
-    }
-    # Render the HTML template index.html with the data in the context variable
-    return render(request, 'login_complete.html', context=context)
-
 def logout_view(request):
     """View function showing success message after logout."""
     auth.logout(request)
-    context = {
-        'foo': 'bar',
-    }
-    # Render the HTML template index.html with the data in the context variable
-    return render(request, 'logout_complete.html', context=context)
+    messages.success(request, 'You have logged out.', extra_tags='alert alert-success')
+    return render(request, 'you_did_something.html')
 
 @login_required
 def edit_account_view(request):
     """View function for editing account"""
     if request.user.is_authenticated:
         #If we receive POST data
+        context = {
+            'foo': 'bar',
+        }
         if request.method == 'POST':
             # Create a form instance and populate it with data from the request (binding):
             form = EditAccountForm(request.POST)
@@ -179,9 +158,28 @@ def edit_account_view(request):
                 request.user.save()
                 messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
                 return render(request, 'edit_account_form.html')
-        return render(request, 'edit_account_form.html')
+            else:
+                #create error-messaged
+                my_errors = form.errors.as_data()
+                my_errors = my_errors['__all__']
+                for v_error in my_errors:
+                    for error_string in v_error:
+                        messages.error(request, error_string, extra_tags='alert alert-danger')
+                        
+        return render(request, 'edit_account_form.html', context)
     #if user not authenticated
     else:
         #this should never occcur
-        messages.error(request, "Can't edit profile when you are not logged in.")
+        messages.error(request, "Can't edit profile when you are not logged in.", extra_tags='alert alert-danger')
         return HttpResponseRedirect(reverse('login-view'))
+
+@login_required
+def dashboard_view(request):
+    """View function for the dashboard"""
+    messages.info(request, 'You have reached the dashboard.', extra_tags='alert alert-info')
+    messages.success(request, 'Success!.', extra_tags='alert alert-success')
+    messages.warning(request, 'the dashboard is under construction', extra_tags='alert alert-warning')
+    context = {
+        'foo': 'bar',
+    }
+    return render(request, 'dashboard.html', context)
