@@ -5,7 +5,6 @@
 translations
 add testing: all pages loading properly, all forms working, login and out works, creating and deleting users works, create test-model to to test that db is fine?
 try heroku pipeline for deploy
-add 404-pages etc.
 
 
 

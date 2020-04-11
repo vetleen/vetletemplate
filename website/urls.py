@@ -12,6 +12,3 @@ urlpatterns = [
     path('dashboard/', views.dashboard_view, name='dashboard'),
 
 ]
-
-#Error handlers:
-handler404 = 'website.views.custom_404_error_view'

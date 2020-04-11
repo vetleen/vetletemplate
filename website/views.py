@@ -180,12 +180,3 @@ def dashboard_view(request):
         'foo': 'bar',
     }
     return render(request, 'dashboard.html', context)
-
-def custom_404_error_view(request, exception):
-    """View function for the dashboard"""
-    print(exception)
-    messages.warning(request, '404 error: The requested resource was not found on this server.', extra_tags='alert alert-warning')
-    context = {
-        'foo': 'bar',
-    }
-    return render(request, 'errorviews/custom_404_error_page.html', context)
