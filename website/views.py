@@ -34,13 +34,16 @@ def index(request):
 def change_password(request):
     """View function for changing ones password."""
     user = request.user
-
+    form = ChangePasswordForm
+    context = {
+        'form': form,
+        'submit_button_text': 'Update password',
+    }
     # If this is a POST request then process the Form data
     if request.method == 'POST':
-
         # Create a form instance and populate it with data from the request (binding):
         form = ChangePasswordForm(request.POST)
-
+        context.update({'form': form})
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
@@ -49,32 +52,31 @@ def change_password(request):
             update_session_auth_hash(request, request.user)
             # redirect to a new URL:
             messages.success(request, 'Your password was changed.', extra_tags='alert alert-success')
-            return render(request, 'you_did_something.html')
+            form = ChangePasswordForm
+            context.update({'form': form})
+            return render(request, 'change_password_form.html', context)
 
-    # If this is a GET (or any other method) create the default form.
-    else:
 
-        form = ChangePasswordForm
-
-    context = {
-        'form': form,
-    }
-
-    return render(request, 'password_change_form.html', context)
+    return render(request, 'change_password_form.html', context)
 
 def sign_up(request):
     """View function for signing up."""
     #logged in users are redirected
     if request.user.is_authenticated:
-        messages.error(request, 'You are already signed up.', extra_tags='alert alert-warning')
+        messages.error(request, 'You are already signed in, and can\'t make a new account until you sign out.', extra_tags='alert alert-warning')
         return render(request, 'you_did_something.html')
 
+    form = SignUpForm
+    context = {
+        'form': form,
+        'submit_button_text': 'Sign up',
+    }
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
         form = SignUpForm(request.POST)
-
+        context.update({'form': form})
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
@@ -87,13 +89,6 @@ def sign_up(request):
 
             return render(request, 'you_did_something.html')
 
-    # If this is a GET (or any other method) create the default form.
-    else:
-        form = SignUpForm
-    context = {
-        'form': form,
-    }
-
     return render(request, 'sign_up_form.html', context)
 
 def login_view(request):
@@ -101,12 +96,18 @@ def login_view(request):
     if request.user.is_authenticated:
         messages.error(request, 'You are already logged in.', extra_tags='alert alert-error')
         return render(request, 'you_did_something.html')
-
+    #make context
+    form = LoginForm
+    context = {
+        'submit_button_text': 'Login',
+        'form': form,
+        }
     #If we receive POST data
     if request.method == 'POST':
         #print("Received post request")
         # Create a form instance and populate it with data from the request (binding):
         form = LoginForm(request.POST)
+        context.update({'form': form})
         # Check if the form is valid:
         if form.is_valid():
             #print("form was valid")
@@ -123,12 +124,6 @@ def login_view(request):
                 messages.success(request, 'You have logged in.', extra_tags='alert alert-success')
                 return render(request, 'you_did_something.html')
 
-    # If this is a GET (or any other method) create the default form.
-    else:
-        form = LoginForm
-    context = {
-        'form': form,
-    }
     return render(request, 'login_form.html', context)
 
 def logout_view(request):
@@ -144,7 +139,8 @@ def edit_account_view(request):
         form = EditAccountForm(initial={'username': request.user})
         #If we receive POST data
         context = {
-            'form': form
+            'form': form,
+            'submit_button_text': 'Update account details'
         }
         if request.method == 'POST':
             # Create a form instance and populate it with data from the request (binding):
@@ -159,9 +155,9 @@ def edit_account_view(request):
                 request.user.email = new_username
                 request.user.save()
                 messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
-                return render(request, 'update_account.html', context)
+                return render(request, 'edit_account_form.html', context)
 
-        return render(request, 'update_account.html', context)
+        return render(request, 'edit_account_form.html', context)
     #if user not authenticated
     else:
         #this should never occcur
