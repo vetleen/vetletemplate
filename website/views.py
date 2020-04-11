@@ -159,18 +159,9 @@ def edit_account_view(request):
                 request.user.email = new_username
                 request.user.save()
                 messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
-                return render(request, 'form_renderer.html', context)
-            else:
-                pass
-                #create error-messaged
-                #my_errors = form.errors.as_data()
-                #print(my_errors)
-                #my_errors = my_errors['__all__']
-                #for v_error in my_errors:
-                #    for error_string in v_error:
-                #        messages.error(request, error_string, extra_tags='alert alert-danger')
+                return render(request, 'update_account.html', context)
 
-        return render(request, 'form_renderer.html', context)
+        return render(request, 'update_account.html', context)
     #if user not authenticated
     else:
         #this should never occcur

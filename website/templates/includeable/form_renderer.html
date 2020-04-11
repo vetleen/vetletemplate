@@ -1,20 +1,12 @@
-{% extends "base_generic.html" %}
+
 {% load widget_tweaks %}
-{% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-sm-12">
-      <h3> Change account details </h3>
-    </div>
-  </div> <!-- row -->
-  {% include "includeable/message_displayer.html" %}
-  <div class="row">
-    <div class="col-6">
+
       <form method="post">
         {% csrf_token %}
         {% for hidden_field in form.hidden_fields %}
           {{ hidden_field }}
         {% endfor %}
+
         {% for field in form.visible_fields %}
         <div class="form-group">
           {{ field.label_tag }}
@@ -39,8 +31,3 @@
         {% endfor %}
         <button type="submit"  class="btn btn-primary">Update account details</button>
       </form>
-    </div><!-- col -->
-  </div> <!-- row -->
-</div><!-- container -->
-
-{% endblock %}
