@@ -4,10 +4,25 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-12">
-      <h3> Not Found </h3>
+      <h3> Page not Found </h3>
     </div>
   </div> <!-- row -->
-  {% include "includeable/message_displayer.html" %}
+  <div class="row justify-content-start">
+    <div  class="alert alert-danger col-lg-6 alert-dismissible fade show" role="alert">
+      <p> Oh no! We could not find the page at {{ request_path }}. The server gave the following error message:</p>
+    </div>
+  </div> <!-- row -->
+
+
+  <div class="row justify-content-start">
+    <div  class="alert alert-danger col-lg-6 alert-dismissible fade show" role="alert">
+      {{ exception }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div> <!-- row -->
+
 </div><!-- container -->
 
 {% endblock %}
