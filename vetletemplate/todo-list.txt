@@ -1,7 +1,7 @@
 ##Vetletemplate:
 
 
-all form-pages must use twitter bootstrap design & messages
+
 translations
 add testing: all pages loading properly, all forms working, login and out works, creating and deleting users works, create test-model to to test that db is fine?
 try heroku pipeline for deploy
@@ -9,11 +9,8 @@ add 404-pages etc.
 
 
 favicon
-support for ?next= on login,
-check all the success-templates, shold ther ebe more in them? like, prompt to log in again?
-fix buttons and classes in all forms using widgets
 More content on footer? (contact info, about us, blog?)
-fix html indentations?
+
 
 
 

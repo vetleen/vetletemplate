@@ -92,10 +92,12 @@ def sign_up(request):
     return render(request, 'sign_up_form.html', context)
 
 def login_view(request):
+    """View function for logging in."""
     #is user already logged in?
     if request.user.is_authenticated:
         messages.error(request, 'You are already logged in.', extra_tags='alert alert-error')
         return render(request, 'you_did_something.html')
+
     #make context
     form = LoginForm
     context = {
@@ -122,15 +124,15 @@ def login_view(request):
                 #print("user is: %s" % request.user)
                 #print("user is authenticated?: %s" % request.user.is_authenticated)
                 messages.success(request, 'You have logged in.', extra_tags='alert alert-success')
-                return render(request, 'you_did_something.html')
+                return HttpResponseRedirect(request.GET.get('next', '/'))
 
     return render(request, 'login_form.html', context)
 
 def logout_view(request):
     """View function showing success message after logout."""
     auth.logout(request)
-    messages.success(request, 'You have logged out.', extra_tags='alert alert-success')
-    return render(request, 'you_did_something.html')
+    messages.success(request, 'You have logged out successfully.', extra_tags='alert alert-success')
+    return HttpResponseRedirect(request.GET.get('next', '/'))
 
 @login_required
 def edit_account_view(request):
