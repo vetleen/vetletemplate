@@ -53,7 +53,7 @@ class EditAccountForm(forms.Form):
         if 'username' in self.cleaned_data:
             if User.objects.filter(username=self.cleaned_data['username']).exists():
                 raise forms.ValidationError(
-                    "Oh no! We couldn't update your email. Someone already has a user with that email (%(taken_email)s).",
+                    "Oh no! We couldn't update your email. Someone already has a user with the email %(taken_email)s.",
                     code='invalid',
                     params={'taken_email': self.cleaned_data['username']}
                 )

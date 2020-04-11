@@ -82,12 +82,12 @@ def sign_up(request):
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             user = User.objects.create_user(form.cleaned_data['username'], form.cleaned_data['username'], form.cleaned_data['password'])
             user.save()
-            messages.success(request, 'Welcome aboard. Check out your dashboard next?.', extra_tags='alert alert-success')
+            messages.success(request, 'Welcome aboard. This is your dashboard, where you can....', extra_tags='alert alert-success')
             if user is not None:
                 auth.login(request, user)
             # redirect to a new URL:
 
-            return render(request, 'you_did_something.html')
+            return HttpResponseRedirect(reverse('dashboard'))
 
     return render(request, 'sign_up_form.html', context)
 
@@ -145,19 +145,23 @@ def edit_account_view(request):
             'submit_button_text': 'Update account details'
         }
         if request.method == 'POST':
-            # Create a form instance and populate it with data from the request (binding):
-            form = EditAccountForm(request.POST)
-            context.update({'form': form})
-            # Check if the form is valid:
-            if form.is_valid():
-                #print("form was valid")
-                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-                new_username = form.cleaned_data['username']
-                request.user.username = new_username
-                request.user.email = new_username
-                request.user.save()
-                messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
-                return render(request, 'edit_account_form.html', context)
+            #if trying to change to user existing username/password
+            if request.POST['username'] == request.user.username:
+                message_string = "You are already registered with the email %s." % request.POST['username']
+                messages.error(request, message_string, extra_tags='alert alert-warning')
+            else:
+                # Create a form instance and populate it with data from the request (binding):
+                form = EditAccountForm(request.POST)
+                context.update({'form': form})
+                # Check if the form is valid:
+                if form.is_valid():
+                    #print("form was valid")
+                    # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+                    new_username = form.cleaned_data['username']
+                    request.user.username = new_username
+                    request.user.email = new_username
+                    request.user.save()
+                    messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
 
         return render(request, 'edit_account_form.html', context)
     #if user not authenticated
