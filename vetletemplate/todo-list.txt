@@ -7,9 +7,6 @@ add testing: all pages loading properly, all forms working, login and out works,
 try heroku pipeline for deploy
 add 404-pages etc.
 
-More content on footer? (contact info, about us, blog?)
-
-
 
 
 ##MeAndMyTeam

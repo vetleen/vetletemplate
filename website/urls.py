@@ -10,4 +10,8 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('edit-account/', views.edit_account_view, name='edit-account'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
+
 ]
+
+#Error handlers:
+handler404 = 'website.views.custom_404_error_view'
