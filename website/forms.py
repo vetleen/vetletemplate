@@ -30,7 +30,6 @@ class ChangePasswordForm(forms.Form):
     new_password = forms.CharField(max_length = 20, label="Enter a new password",widget=forms.TextInput(attrs={'type':'password', 'placeholder':'New Password'}))
     confirm_new_password = forms.CharField(max_length = 20, label="Confirm new password", widget=forms.TextInput(attrs={'type':'password', 'placeholder':'Confirm New Password'}))
 
-
     def clean(self):
         if 'new_password' in self.cleaned_data and 'confirm_new_password' in self.cleaned_data:
             if self.cleaned_data['new_password'] != self.cleaned_data['confirm_new_password']:

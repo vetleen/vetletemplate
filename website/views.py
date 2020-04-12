@@ -33,7 +33,7 @@ def index(request):
 @login_required
 def change_password(request):
     """View function for changing ones password."""
-    user = request.user
+
     form = ChangePasswordForm
     context = {
         'form': form,
@@ -46,12 +46,16 @@ def change_password(request):
         context.update({'form': form})
         # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            user.set_password(form.cleaned_data['new_password'])
-            user.save()
-            update_session_auth_hash(request, request.user)
-            # redirect to a new URL:
-            messages.success(request, 'Your password was changed.', extra_tags='alert alert-success')
+            user = request.user
+            if not user.check_password(form.cleaned_data['old_password']):
+                messages.error(request, 'Password was not changed! You typed your old password in incorrectly, please try again.', extra_tags='alert alert-warning')
+            else:
+                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+                user.set_password(form.cleaned_data['new_password'])
+                user.save()
+                update_session_auth_hash(request, request.user)
+                # redirect to a new URL:
+                messages.success(request, 'Your password was changed.', extra_tags='alert alert-success')
             form = ChangePasswordForm
             context.update({'form': form})
             return render(request, 'change_password_form.html', context)
@@ -95,7 +99,7 @@ def login_view(request):
     """View function for logging in."""
     #is user already logged in?
     if request.user.is_authenticated:
-        messages.error(request, 'You are already logged in.', extra_tags='alert alert-error')
+        messages.info(request, 'You are already logged in.', extra_tags='alert alert-info')
         return render(request, 'you_did_something.html')
 
     #make context
@@ -129,10 +133,10 @@ def login_view(request):
     return render(request, 'login_form.html', context)
 
 def logout_view(request):
-    """View function showing success message after logout."""
+    """View function that logs userout and shows success message after logout."""
     auth.logout(request)
-    messages.success(request, 'You have logged out successfully.', extra_tags='alert alert-success')
-    return HttpResponseRedirect(request.GET.get('next', '/'))
+    messages.info(request, 'You have logged out successfully.', extra_tags='alert alert-info')
+    return render(request, 'logout_complete.html')
 
 @login_required
 def edit_account_view(request):

@@ -133,3 +133,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# my stuff
+/staticfiles
+*.sqllite3
