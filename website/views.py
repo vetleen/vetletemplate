@@ -31,10 +31,21 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 @login_required
+def dashboard_view(request):
+    """View function for the dashboard"""
+    messages.info(request, 'You have reached the dashboard.', extra_tags='alert alert-info')
+    messages.success(request, 'Success!.', extra_tags='alert alert-success')
+    messages.warning(request, 'the dashboard is under construction', extra_tags='alert alert-warning')
+    context = {
+        'foo': 'bar',
+    }
+    return render(request, 'dashboard.html', context)
+
+@login_required
 def change_password(request):
     """View function for changing ones password."""
 
-    form = ChangePasswordForm
+    form = ChangePasswordForm(user=request.user)
     context = {
         'form': form,
         'submit_button_text': 'Update password',
@@ -42,7 +53,7 @@ def change_password(request):
     # If this is a POST request then process the Form data
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
-        form = ChangePasswordForm(request.POST)
+        form = ChangePasswordForm(request.POST, user=request.user)
         context.update({'form': form})
         # Check if the form is valid:
         if form.is_valid():
@@ -56,7 +67,7 @@ def change_password(request):
                 update_session_auth_hash(request, request.user)
                 # redirect to a new URL:
                 messages.success(request, 'Your password was changed.', extra_tags='alert alert-success')
-            form = ChangePasswordForm
+            form = ChangePasswordForm(user=request.user)
             context.update({'form': form})
             return render(request, 'change_password_form.html', context)
 
@@ -100,23 +111,18 @@ def login_view(request):
     #is user already logged in?
     if request.user.is_authenticated:
         messages.info(request, 'You are already logged in.', extra_tags='alert alert-info')
-        return render(request, 'you_did_something.html')
+        return HttpResponseRedirect(request.GET.get('next', reverse('dashboard')))
 
-    #make context
-    form = LoginForm
-    context = {
-        'submit_button_text': 'Login',
-        'form': form,
-        }
     #If we receive POST data
     if request.method == 'POST':
-        #print("Received post request")
         # Create a form instance and populate it with data from the request (binding):
         form = LoginForm(request.POST)
-        context.update({'form': form})
+        context = {
+            'submit_button_text': 'Login',
+            'form': form,
+            }
         # Check if the form is valid:
         if form.is_valid():
-            #print("form was valid")
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -129,7 +135,16 @@ def login_view(request):
                 #print("user is authenticated?: %s" % request.user.is_authenticated)
                 messages.success(request, 'You have logged in.', extra_tags='alert alert-success')
                 return HttpResponseRedirect(request.GET.get('next', '/'))
-
+            else:
+                #i don't see this happening, as my form validation should take care of this
+                messages.error(request, "Username and password did not match, please try again.", extra_tags='alert alert-warning')
+    else:
+        #make context
+        form = LoginForm
+        context = {
+            'submit_button_text': 'Login',
+            'form': form,
+            }
     return render(request, 'login_form.html', context)
 
 def logout_view(request):
@@ -142,45 +157,29 @@ def logout_view(request):
 def edit_account_view(request):
     """View function for editing account"""
     if request.user.is_authenticated:
-        form = EditAccountForm(initial={'username': request.user})
+        form = EditAccountForm(initial={'username': request.user}, user=request.user)
         #If we receive POST data
         context = {
             'form': form,
             'submit_button_text': 'Update account details'
         }
         if request.method == 'POST':
-            #if trying to change to user existing username/password
-            if request.POST['username'] == request.user.username:
-                message_string = "You are already registered with the email %s." % request.POST['username']
-                messages.error(request, message_string, extra_tags='alert alert-warning')
-            else:
-                # Create a form instance and populate it with data from the request (binding):
-                form = EditAccountForm(request.POST)
-                context.update({'form': form})
-                # Check if the form is valid:
-                if form.is_valid():
-                    #print("form was valid")
-                    # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-                    new_username = form.cleaned_data['username']
-                    request.user.username = new_username
-                    request.user.email = new_username
-                    request.user.save()
-                    messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
+            # Create a form instance and populate it with data from the request (binding):
+            form = EditAccountForm(request.POST, user=request.user)
+            context.update({'form': form})
+            # Check if the form is valid:
+            if form.is_valid():
+                #print("form was valid")
+                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+                new_username = form.cleaned_data['username']
+                request.user.username = new_username
+                request.user.email = new_username
+                request.user.save()
+                messages.success(request, 'Your profile details was updated.', extra_tags='alert alert-success')
 
         return render(request, 'edit_account_form.html', context)
     #if user not authenticated
     else:
         #this should never occcur
         messages.error(request, "Can't edit profile when you are not logged in.", extra_tags='alert alert-danger')
-        return HttpResponseRedirect(reverse('login-view'))
-
-@login_required
-def dashboard_view(request):
-    """View function for the dashboard"""
-    messages.info(request, 'You have reached the dashboard.', extra_tags='alert alert-info')
-    messages.success(request, 'Success!.', extra_tags='alert alert-success')
-    messages.warning(request, 'the dashboard is under construction', extra_tags='alert alert-warning')
-    context = {
-        'foo': 'bar',
-    }
-    return render(request, 'dashboard.html', context)
+        return HttpResponseRedirect(reverse('loginc'))

@@ -40,8 +40,43 @@ class TestThatUrlsExist(TestCase):
             my_message = 'TestThatUrlsExist: the url: \'%s\' gave the wrong status code (%s).'%(url, response.status_code)
             self.assertIn(response.status_code, self.acceptable_url_statuses, yellow(my_message))
 
+class DashboardViewTest(TestCase):
+    ''' TESTS THAT THE DASHBOARD BEHAVES PROPERLY '''
+    def setUp(self):
+        User.objects.create_user(   'macgyver@phoenix.com',
+                                    'macgyver@phoenix.com',
+                                    'anguspassword'
+                                    )
+        User.objects.create_user(   'thornton@phoenix.com',
+                                    'thornton@phoenix.com',
+                                    'petepassword'
+                                    )
+    def test_anonymous_users(self):
+        #Test that anonymous users are redirected properly
+        response = self.client.get('/dashboard/', follow=True)
+        my_message = yellow('DashboardViewTest: anonymous users should be redirected when attempting to GET at this address')
+        self.assertRedirects(response, '/login/?next=/dashboard/', 302, 200, msg_prefix=my_message)
+        response = self.client.post('/dashboard/', follow=True)
+        my_message = yellow('DashboardViewTest: anonymous users should be redirected when attempting to POST to this address')
+        self.assertRedirects(response, '/login/?next=/dashboard/', 302, 200, msg_prefix=my_message)
+
+    def test_authenitcated_users(self):
+        #log in
+        self.credentials = {
+            'username': 'macgyver@phoenix.com',
+            'password': 'anguspassword'
+            }
+        response = self.client.post('/login/', self.credentials, follow=True)
+
+        #check that it worked
+        self.assertTrue(response.context['user'].is_active)
+
+        #Test that authenticated users are shown the correct template
+        my_message = "DashboardTestView: The template 'dashboard.html' should be used."
+        self.assertTemplateUsed(response, 'dashboard.html', my_message)
+
 class IndexViewTest(TestCase):
-    ''' TESTS THAT THE FRONT PAGE BEHAVES PROPERLY '''
+    ''' TESTS THAT THE FRONTPAGE BEHAVES PROPERLY '''
     def setUp(self):
         User.objects.create_user(   'macgyver@phoenix.com',
                                     'macgyver@phoenix.com',
@@ -100,11 +135,12 @@ class LoginViewTest(TestCase):
         response = self.client.get('/login/', follow=True)
         messages = list(response.context['messages'])
 
-        my_message = 'LoginViewTest: A logged in user was not given exactly 1 messages as expected, but %s.'%(len(messages))
-        self.assertEqual(len(messages), 1, yellow(my_message))
+        #check for logged in message
+        my_message = yellow('LoginViewTest: Already logged in users should be told "You are already logged in."')
+        self.assertContains(response, 'You are already logged in.', msg_prefix=my_message)
 
-        my_message = 'LoginViewTest: An already logged in user was correct template at /login/.'
-        self.assertTemplateUsed(response, 'you_did_something.html', yellow(my_message))
+        my_message = yellow('LoginViewTest: Already logged in user should be redirected to dashboard.')
+        self.assertTemplateUsed(response, 'dashboard.html', my_message)
 
     ### TESTS FOR GET ###
     def test_correct_form_and_template_is_used(self):
@@ -209,6 +245,7 @@ class ChangePasswordViewTest(TestCase):
                                     'johnpassword2'
                                     )
     def test_that_login_is_required(self):
+
         #Test that login is required
         response = self.client.get('/change-password/', follow=True)
         my_message = yellow('ChangePasswordViewTest: anonymous users should be redirected when attempting to GET at this address')
@@ -225,17 +262,21 @@ class ChangePasswordViewTest(TestCase):
             }
         #Login
         response = self.client.post('/login/', self.credentials, follow=True)
+
         #check that it worked
         my_message = yellow('ChangePasswordViewTest: User was supposed to be logged in' )
         self.assertTrue(response.context['user'].is_active, my_message)
+
         #Test GET works
         response = self.client.get('/change-password/', follow=True)
+
         ##correct template
-        my_message = 'ChangePasswordViewTest: Should use template "change_password_form.html".'
-        self.assertTemplateUsed(response, 'change_password_form.html', yellow(my_message))
+        my_message = yellow('ChangePasswordViewTest: Should use template "change_password_form.html".')
+        self.assertTemplateUsed(response, 'change_password_form.html', my_message)
+
         ##correct form
-        my_message = 'ChangePasswordViewTest: Expected ChangePasswordForm to be available in context.'
-        self.assertEqual(response.context['form'], ChangePasswordForm, my_message)
+        my_message = yellow('ChangePasswordViewTest: Expected ChangePasswordForm to be available in context.')
+        self.assertTrue(response.context['form'], my_message)
 
     def test_post_requests(self):
         #correct credentials
@@ -245,9 +286,11 @@ class ChangePasswordViewTest(TestCase):
             }
         #Login
         response = self.client.post('/login/', self.credentials, follow=True)
+
         #check that it worked
         my_message = yellow('ChangePasswordViewTest: User was supposed to be logged in' )
         self.assertTrue(response.context['user'].is_active, my_message)
+
         ###Test POST works
         #wrong input in all fields
         response = self.client.post('/change-password/', {'old_password': "", 'new_password': "", 'confirm_new_password': ""}, follow=True)
@@ -259,19 +302,15 @@ class ChangePasswordViewTest(TestCase):
 
         #correct input in all fields
         response = self.client.post('/change-password/', {'old_password': "johnpassword", 'new_password': "newjohnpassword", 'confirm_new_password': "newjohnpassword"}, follow=True)
-        my_message = yellow('ChangePasswordViewTest: %s should not be a bound instance of ChangePasswordForm, but point directly at it.'%(response.context['form']))
+        my_message = yellow('ChangePasswordViewTest: %s should exist.'%(response.context['form']))
         received_form = response.context['form']
-        self.assertEqual(received_form, ChangePasswordForm, my_message)
+        self.assertIsInstance(received_form, ChangePasswordForm, my_message)
         my_message = yellow('ChangePasswordViewTest: should use change_password_form-html template.')
         self.assertTemplateUsed(response, 'change_password_form.html', my_message)
+
         #gotta check the user is still logged in:
         self.assertTrue(response.context['user'].is_active)
-        #print("checking password for user after first change (correctly done): should be F-T-F-F")
-        #print(response.context['user'])
-        #print(response.context['user'].check_password('johnpassword'))
-        #print(response.context['user'].check_password('newjohnpassword'))
-        #print(response.context['user'].check_password('randompassword'))
-        #print(response.context['user'].check_password('evennewerjohnpassword'))
+
         #should stil use the right template
         my_message = 'ChangePasswordViewTest: Should use template "change_password_form.html".'
         self.assertTemplateUsed(response, 'change_password_form.html', yellow(my_message))
@@ -282,15 +321,10 @@ class ChangePasswordViewTest(TestCase):
 
         #Are passwords incorrectly updated when you provide the wrong passowrd?
         response = self.client.post('/change-password/', {'old_password': "ggg", 'new_password': "ejpassword", 'confirm_new_password': "ejpassword"}, follow=True)
-        #print("checking password for user after second change (incorrectly done): should be F-T-F-F (passw-change didnt work) OR F-F-F-T (passw-change worked)")
-        #print(response.context['user'])
-        #print(response.context['user'].check_password('johnpassword'))
-        #print(response.context['user'].check_password('newjohnpassword'))
-        #print(response.context['user'].check_password('randompassword'))
-        #print(response.context['user'].check_password('ejpassword'))
         my_message = yellow('ChangePasswordViewTest: password should NOT be changed.')
         self.assertFalse(response.context['user'].check_password('ejpassword'), my_message)
         self.assertTrue(response.context['user'].check_password('newjohnpassword'), my_message)
+
         #should stil use the right template
         my_message = 'ChangePasswordViewTest: Should use template "change_password_form.html".'
         self.assertTemplateUsed(response, 'change_password_form.html', yellow(my_message))
