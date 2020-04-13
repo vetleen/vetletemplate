@@ -110,7 +110,7 @@ def login_view(request):
     """View function for logging in."""
     #is user already logged in?
     if request.user.is_authenticated:
-        messages.info(request, 'You are already logged in.', extra_tags='alert alert-info')
+        messages.error(request, 'You are already logged in.', extra_tags='alert alert-warning')
         return HttpResponseRedirect(request.GET.get('next', reverse('dashboard')))
 
     #If we receive POST data

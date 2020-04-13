@@ -106,9 +106,86 @@ class IndexViewTest(TestCase):
         self.assertTemplateNotUsed(response, 'index.html', my_message)
         self.assertTemplateUsed(response, 'dashboard.html', my_message)
 
+class SignUpViewTest(TestCase):
+    """
+    TEST THE SIGNUP VIEW IN EVERY WHICH WAY
+    """
+    #test that you are redirected if already authenticated
+    #test that sign-up is possible
+    def test_signup_is_possible_but_not_twice(self):
+        signup_credentials = {'username':"jcdenton@unatco.gov", 'password': "bloodshot"}
+        response = self.client.post('/sign-up/', {
+                                    'username': signup_credentials['username'],
+                                    'password': signup_credentials['password'],
+                                    'confirm_password': signup_credentials['password']
+                                    }, follow=True)
+        #check that user was signed in after creating user
+        self.assertTrue(response.context['user'].is_active)
+        users_w_uname = User.objects.filter(username = signup_credentials['username']).count()
+        self.assertEqual(users_w_uname, 1, yellow("Signup-view should create exactly 1 user with the same username, not %s")%(users_w_uname))
+        self.assertRedirects(response, '/dashboard/', 302, 200, msg_prefix="Expected user to be redirected to dashboard after sign-up")
+        self.assertContains(response, 'Welcome aboard.', msg_prefix=yellow("expected a newly signed on user to be greeted by a hearty \'Welcome aboard.\'"))
+
+        #test that signup is not possible with existing username
+        #def test_signup_not_possible_with_exising_username(self):
+        #signup_credentials = {'username':"jcdenton@unatco.gov", 'password': "bloodshot"}
+        response = self.client.post('/logout/', follow=True)
+        self.assertFalse(response.context['user'].is_active) #logging out user before signing up again
+
+        #same credentials as before
+        response = self.client.post('/sign-up/', {
+                                    'username': signup_credentials['username'],
+                                    'password': signup_credentials['password'],
+                                    'confirm_password': signup_credentials['password']
+                                    }, follow=True)
+        #check that user was signed in after creating user
+        self.assertFalse(response.context['user'].is_active) # should not be logged in, because should not be signed up
+        self.assertEqual(User.objects.filter(username = signup_credentials['username']).count(), 1, yellow("Signup-view should not have created a new user with an existing username"))
+        self.assertTemplateUsed(response, 'sign_up_form.html', yellow('Expected the tempate sign_up_form.html to be used'))
+        self.assertNotContains(response, 'Welcome aboard.', msg_prefix=yellow("Did not expect a user that should have failed to sign up to be greeted by a hearty \'Welcome aboard.\'"))
+        self.assertContains(response, 'A user with the email already exist', msg_prefix=yellow("Expected an error containing \'A user with the email already exist.\'"))
+
+    #test that signup is not possible with no password
+    def test_signup_not_possible_with_no_password(self):
+        signup_credentials2 = {'username':"pauldenton@unatco.gov", 'password': "chameleon"}
+        response = self.client.post('/logout/', follow=True)
+        self.assertFalse(response.context['user'].is_active) #logging oput user before signing up again
+
+        #same credentials as before
+        response = self.client.post('/sign-up/', {
+                                    'username': signup_credentials2['username'],
+                                    'password': '',
+                                    'confirm_password': ''
+                                    }, follow=True)
+        #check that user was signed in after creating user
+        self.assertFalse(response.context['user'].is_active) # should not be logged in, because should not be signed up
+        self.assertEqual(User.objects.filter(username = signup_credentials2['username']).count(), 0, yellow("Signup-view should not have created a new user when no password was provided"))
+        self.assertTemplateUsed(response, 'sign_up_form.html', yellow('Expected the tempate sign_up_form.html to be used'))
+        self.assertNotContains(response, 'Welcome aboard.', msg_prefix=yellow("Did not expect a user that should have failed to sign up to be greeted by a hearty \'Welcome aboard.\'"))
+        self.assertContains(response, 'This field is required.', msg_prefix=yellow("Expected an error containing \'This field is required.\'"))
+
+    #test that signup is not possible non-matching password
+    def test_signup_not_possible_with_non_matching_passwords(self):
+        signup_credentials2 = {'username':"pauldenton@unatco.gov", 'password': "chameleon"}
+        response = self.client.post('/logout/', follow=True)
+        self.assertFalse(response.context['user'].is_active) #logging oput user before signing up again
+
+        #same credentials as before
+        response = self.client.post('/sign-up/', {
+                                    'username': signup_credentials2['username'],
+                                    'password': signup_credentials2['password'],
+                                    'confirm_password': 'jcpassword'
+                                    }, follow=True)
+        #check that user was signed in after creating user
+        self.assertFalse(response.context['user'].is_active) # should not be logged in, because should not be signed up
+        self.assertEqual(User.objects.filter(username = signup_credentials2['username']).count(), 0, yellow("Signup-view should not have created a new user when non-matching passwords was provided"))
+        self.assertTemplateUsed(response, 'sign_up_form.html', yellow('Expected the tempate sign_up_form.html to be used'))
+        self.assertNotContains(response, 'Welcome aboard.', msg_prefix=yellow("Did not expect a user that should have failed to sign up to be greeted by a hearty \'Welcome aboard.\'"))
+        self.assertContains(response, 'The second password you entered did not match the first. Please try again.', msg_prefix=yellow("Expected an error containing \'The second password you entered did not match the first. Please try again.\'"))
+
 class LoginViewTest(TestCase):
     """
-    TEST THE LOG IN VIEW IN EVERY WHICH WAY
+    TEST THE LOGIN VIEW IN EVERY WHICH WAY
     """
     def setUp(self):
         User.objects.create_user(   'lennon@thebeatles.com',

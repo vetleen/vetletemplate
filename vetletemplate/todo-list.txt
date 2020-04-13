@@ -1,9 +1,6 @@
 ##Vetletemplate:
 
-fix forms so that they validate properly and instantiate and all that
-more consistent use of alert-types
 
-test signup-view
 test edit-accountview
 test that 404 and so on works?
 

@@ -20,12 +20,17 @@ class SignUpForm(forms.Form):
 
     def clean_password(self):
         #logic to validate password. Length and comp?
+        if len(self.cleaned_data['password']) < 3:
+           raise forms.ValidationError(
+                "The password must be atleast 3 characters long. Please try again.",
+               code='invalid',
+                )
         return self.cleaned_data['password']
 
     def clean_confirm_password(self):
         if self.cleaned_data['password'] != self.cleaned_data['confirm_password']:
            raise forms.ValidationError(
-                "The second new password you entered did not match the first. Please try again.",
+                "The second password you entered did not match the first. Please try again.",
                code='invalid',
                 )
         return self.cleaned_data['confirm_password']
@@ -34,7 +39,7 @@ class ChangePasswordForm(forms.Form):
     def __init__(self, *args, **kwargs):
          self.user = kwargs.pop('user',None)
          super(ChangePasswordForm, self).__init__(*args, **kwargs)
-         
+
     old_password = forms.CharField(max_length = 20, label="Current password",widget=forms.PasswordInput(attrs={'type':'password', 'placeholder':'Old Password'}))
     new_password = forms.CharField(max_length = 20, label="Enter a new password",widget=forms.PasswordInput(attrs={'type':'password', 'placeholder':'New Password'}))
     confirm_new_password = forms.CharField(max_length = 20, label="Confirm new password", widget=forms.PasswordInput(attrs={'type':'password', 'placeholder':'Confirm New Password'}))
