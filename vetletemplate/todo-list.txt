@@ -1,9 +1,5 @@
 ##Vetletemplate:
 
-
-
-test that 404 and so on works?
-
 check that repo can be cloned and made to work again
 try heroku pipeline for deploy
 
@@ -16,7 +12,7 @@ add product model and related view logic
 add plans to sign-up-process
 add support for manually adding employees
 add data visuallization on web
-add report-generator
+add report-generator (I see there are heroku addons for html->pdf)
 
 #fun stuff
 design logo
