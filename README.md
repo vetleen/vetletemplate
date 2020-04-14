@@ -14,7 +14,37 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - open http://127.0.0.1:8000/ in browser and it should work
 
 
+#change the vetletemplate name
+- change the name everywhere it appears
+- grep -nir vetletemplate to find those places
+- should be:
+-> README (not stricly neccessary)
+-> wsgi.py
+-> urls.py
+-> settings.py 
+-> asgi.py 
+-> Procfile
+-> manage.py
+-> bunch of stuff in __pycache__ (I deleted it, although I don't know if this is required)
+- run grep again to double check
+- python manage.py test (should not fail)
+- python manage.py runserver
+-> Error stories: I once managed to rename my URLs import, whiich I wasn't supposed to do, which caused some confusion. But bugs can be fixed.
+- open http://127.0.0.1:8000/ in browser and it should work
 
+#get onto heroku
+- have heroku installed (> snap install heroku --classic)
+- heroku login
+- heroku create desiredappname
+- update settings.pys ALLOWED_HOST-setting
+- add and commit changes to git
+- push to heroku (git push heroku master)
+- heroku run python manage-py makemigrations (should give no changes message)
+- heroku run python manage-py migrate
+- heroku open
+- try to sign up, log out, log in, change password and change user details.
+- heroku run python manage.py createsuperuser
+- try /admin/
 
-
+#have fun creating your next project!
 
