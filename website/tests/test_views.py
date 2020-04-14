@@ -405,3 +405,97 @@ class ChangePasswordViewTest(TestCase):
         #should stil use the right template
         my_message = 'ChangePasswordViewTest: Should use template "change_password_form.html".'
         self.assertTemplateUsed(response, 'change_password_form.html', yellow(my_message))
+
+class EditAccountViewTest(TestCase):
+    ''' TESTS THAT THE DASHBOARD BEHAVES PROPERLY '''
+    def setUp(self):
+        User.objects.create_user(   'macgyver@phoenix.com',
+                                    'macgyver@phoenix.com',
+                                    'anguspassword'
+                                    )
+        User.objects.create_user(   'thornton@phoenix.com',
+                                    'thornton@phoenix.com',
+                                    'petepassword'
+                                    )
+    #Test that anonymous users are redirected to login
+    def test_anonymous_users(self):
+        #Test that anonymous users are redirected properly
+        response = self.client.get('/edit-account/', follow=True)
+        my_message = yellow('EditAccountViewTest: anonymous users should be redirected when attempting to GET at this address')
+        self.assertRedirects(response, '/login/?next=/edit-account/', 302, 200, msg_prefix=my_message)
+        response = self.client.post('/edit-account/', follow=True)
+        my_message = yellow('EditAccountViewTest: anonymous users should be redirected when attempting to POST to this address')
+        self.assertRedirects(response, '/login/?next=/edit-account/', 302, 200, msg_prefix=my_message)
+
+    #Test loggeed in users are shown proper page
+    def test_authenitcated_users_can_visit_site(self):
+        ## Set up
+        #log in
+        self.credentials = {
+            'username': 'macgyver@phoenix.com',
+            'password': 'anguspassword'
+            }
+        response = self.client.post('/login/', self.credentials, follow=True)
+        #check that it worked
+        self.assertTrue(response.context['user'].is_active)
+
+        ##tests
+        response = self.client.get('/edit-account/', follow=True)
+        self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
+        self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
+
+    #Test account username can be updated, and that both email and uname is
+    def test_authenitcated_users_can_edit(self):
+        #log in
+        self.credentials = {
+            'username': 'macgyver@phoenix.com',
+            'password': 'anguspassword'
+            }
+        response = self.client.post('/login/', self.credentials, follow=True)
+
+        #check that it worked
+        self.assertTrue(response.context['user'].is_active)
+
+        #Tests
+        response = self.client.post('/edit-account/', {'username': 'am@phoenix.com'}, follow=True)
+        self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
+        self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
+        users_w_uname = User.objects.filter(username = 'am@phoenix.com').count()
+        self.assertEqual(users_w_uname, 1, yellow("Expected exactly 1 user with the filtered username, not %s")%(users_w_uname))
+        users_w_uname = User.objects.filter(username = 'macgyver@phoenix.com').count()
+        self.assertEqual(users_w_uname, 0, yellow("Expected exactly 0 users with the filtered username, not %s")%(users_w_uname))
+    #Test that you cant change to your own name (and proper error)
+    def test_authenitcated_users_cant_change_to_current_name(self):
+        #log in
+        self.credentials = {
+            'username': 'macgyver@phoenix.com',
+            'password': 'anguspassword'
+            }
+        response = self.client.post('/login/', self.credentials, follow=True)
+
+        #check that it worked
+        self.assertTrue(response.context['user'].is_active)
+
+        #Tests
+        response = self.client.post('/edit-account/', {'username': self.credentials['username']}, follow=True)
+        self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
+        self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
+        self.assertContains(response, 'Your email is already set to', msg_prefix=yellow("EditAccountViewTest: expected error message containing \'Your email is already set to\'"))
+
+    #Test that you cant change to someone else's name (and proper error)
+    def test_authenitcated_users_cant_change_to_occupied_name(self):
+        #log in
+        self.credentials = {
+            'username': 'macgyver@phoenix.com',
+            'password': 'anguspassword'
+            }
+        response = self.client.post('/login/', self.credentials, follow=True)
+
+        #check that it worked
+        self.assertTrue(response.context['user'].is_active)
+
+        #Tests
+        response = self.client.post('/edit-account/', {'username': 'thornton@phoenix.com'}, follow=True)
+        self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
+        self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
+        self.assertContains(response, 'A user with the email already exist', msg_prefix=yellow("EditAccountViewTest: expected error message containing \'A user with the email already exist\'"))

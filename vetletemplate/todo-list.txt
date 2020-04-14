@@ -1,7 +1,7 @@
 ##Vetletemplate:
 
 
-test edit-accountview
+
 test that 404 and so on works?
 
 check that repo can be cloned and made to work again
