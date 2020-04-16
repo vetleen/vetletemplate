@@ -5,6 +5,8 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - on github make a new repo with vetletemplate as template. Give it the desired name.
 - mkvirtualenv desired_name (or workon existing_venv - not reccomended)
 - git clone https://github.com/vetleen/newrepo.git (where newrepo is the name of the new repo you just made) or use SSH-key
+- sudo apt-get install python-pip python-dev libpq-dev postgresql postgresql-contrib
+- pip install psycopg2-binary
 - pip install -r requirements.txt (should have python installed)
 - python manage.py makemigrations (should give no changes messages)
 - python manage.py migrate
