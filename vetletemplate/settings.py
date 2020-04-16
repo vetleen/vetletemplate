@@ -155,6 +155,7 @@ X_FRAME_OPTIONS = 'DENY'
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', True)
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF= True
+SECURE_HSTS_SECONDS=60
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
