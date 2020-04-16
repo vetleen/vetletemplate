@@ -4,11 +4,12 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 # Get the repo up and running
 - on github make a new repo with vetletemplate as template. Give it the desired name.
 - mkvirtualenv desired_name (or workon existing_venv - not reccomended)
-- git clone https://github.com/vetleen/newrepo.git (where newrepo is the name of the new repo you just made)
+- git clone https://github.com/vetleen/newrepo.git (where newrepo is the name of the new repo you just made) or use SSH-key
 - pip install -r requirements.txt (should have python installed)
 - python manage.py makemigrations (should give no changes messages)
 - python manage.py migrate
 - python mange.py collectstatic (so we can run tests)
+- either update settings to set SECURE_SSL_REDIRECT=False, or set environment variable DJANGO_SECURE_SSL_REDIRECT=False (if it's True, tests don't work)
 - python manage.py test (should not fail)
 - python manage.py runserver
 - open http://127.0.0.1:8000/ in browser and it should work
@@ -45,7 +46,5 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - try to sign up, log out, log in, change password and change user details.
 - heroku run python manage.py createsuperuser
 - try /admin/
-- set environment variable DJANGO_DEBUG to false
-- set environment variable DJANGO_SECRET_KEY to a new secret key
 
 #have fun creating your next project!
