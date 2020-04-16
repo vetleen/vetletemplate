@@ -12,6 +12,13 @@ def yellow(message):
     ''' A custom function that sets strings meant for the consoll to yellow so that they stand out'''
     return '\n' + '\033[1;33;40m ' + message + '\x1b[0m'
 
+##Why do tests top working when i set the SECURE_SSL_REDIRECT-setting
+import os
+from django.conf import settings
+
+print ('OS says redirect: %s'%(os.environ.get('DJANGO_SECURE_SSL_REDIRECT', "fuzzballs")))
+print ('Django says redirect: %s'%(settings.SECURE_SSL_REDIRECT))
+
 
 # Create your tests here.
 class TestThatUrlsExist(TestCase):
@@ -37,7 +44,7 @@ class TestThatUrlsExist(TestCase):
 
         #test that URLs exist
         for url in self.urls_to_test:
-            response = self.client.get(url, follow=True)
+            response = self.client.get(url, follow=True, secure=True)
             my_message = 'TestThatUrlsExist: the url: \'%s\' gave the wrong status code (%s).'%(url, response.status_code)
             self.assertIn(response.status_code, self.acceptable_url_statuses, yellow(my_message))
 
@@ -54,12 +61,12 @@ class DashboardViewTest(TestCase):
                                     )
     def test_anonymous_users(self):
         #Test that anonymous users are redirected properly
-        response = self.client.get('/dashboard/', follow=True)
+        response = self.client.get('/dashboard/', follow=True, secure=True)
         my_message = yellow('DashboardViewTest: anonymous users should be redirected when attempting to GET at this address')
-        self.assertRedirects(response, '/login/?next=/dashboard/', 302, 200, msg_prefix=my_message)
-        response = self.client.post('/dashboard/', follow=True)
+        self.assertRedirects(response, 'https://testserver/login/?next=/dashboard/', 302, 200, msg_prefix=my_message)
+        response = self.client.post('/dashboard/', follow=True, secure=True)
         my_message = yellow('DashboardViewTest: anonymous users should be redirected when attempting to POST to this address')
-        self.assertRedirects(response, '/login/?next=/dashboard/', 302, 200, msg_prefix=my_message)
+        self.assertRedirects(response, 'https://testserver/login/?next=/dashboard/', 302, 200, msg_prefix=my_message)
 
     def test_authenitcated_users(self):
         #log in
@@ -67,7 +74,7 @@ class DashboardViewTest(TestCase):
             'username': 'macgyver@phoenix.com',
             'password': 'anguspassword'
             }
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
 
         #check that it worked
         self.assertTrue(response.context['user'].is_active)
@@ -88,7 +95,7 @@ class IndexViewTest(TestCase):
                                     'petepassword'
                                     )
     def test_index_can_be_loaded(self):
-        response = self.client.get('/', follow=True)
+        response = self.client.get('/', follow=True, secure=True)
         my_message = yellow('Couldn\'t find the front page at \'/\'')
         self.assertTemplateUsed(response, 'index.html', my_message)
     def test_authenticated_users_get_rd_to_dashboard(self):
@@ -97,12 +104,12 @@ class IndexViewTest(TestCase):
             'username': 'macgyver@phoenix.com',
             'password': 'anguspassword'
             }
-        login_response = self.client.post('/login/', self.credentials, follow=True)
+        login_response = self.client.post('/login/', self.credentials, follow=True, secure=True)
         #try go to front page
-        response = self.client.post('/', self.credentials, follow=True)
+        response = self.client.post('/', self.credentials, follow=True, secure=True)
         #assert get dashboard
         my_message = yellow(' Active user was not correctly redirected when trying to reach front page: ')
-        self.assertRedirects(response, '/dashboard/', 302, 200, msg_prefix=my_message)
+        self.assertRedirects(response, 'https://testserver/dashboard/', 302, 200, msg_prefix=my_message)
         #assert correct template
         self.assertTemplateNotUsed(response, 'index.html', my_message)
         self.assertTemplateUsed(response, 'dashboard.html', my_message)
@@ -119,18 +126,18 @@ class SignUpViewTest(TestCase):
                                     'username': signup_credentials['username'],
                                     'password': signup_credentials['password'],
                                     'confirm_password': signup_credentials['password']
-                                    }, follow=True)
+                                    }, follow=True, secure=True)
         #check that user was signed in after creating user
         self.assertTrue(response.context['user'].is_active)
         users_w_uname = User.objects.filter(username = signup_credentials['username']).count()
         self.assertEqual(users_w_uname, 1, yellow("Signup-view should create exactly 1 user with the same username, not %s")%(users_w_uname))
-        self.assertRedirects(response, '/dashboard/', 302, 200, msg_prefix="Expected user to be redirected to dashboard after sign-up")
+        self.assertRedirects(response, 'https://testserver/dashboard/', 302, 200, msg_prefix="Expected user to be redirected to dashboard after sign-up")
         self.assertContains(response, 'Welcome aboard.', msg_prefix=yellow("expected a newly signed on user to be greeted by a hearty \'Welcome aboard.\'"))
 
         #test that signup is not possible with existing username
         #def test_signup_not_possible_with_exising_username(self):
         #signup_credentials = {'username':"jcdenton@unatco.gov", 'password': "bloodshot"}
-        response = self.client.post('/logout/', follow=True)
+        response = self.client.post('/logout/', follow=True, secure=True)
         self.assertFalse(response.context['user'].is_active) #logging out user before signing up again
 
         #same credentials as before
@@ -138,7 +145,7 @@ class SignUpViewTest(TestCase):
                                     'username': signup_credentials['username'],
                                     'password': signup_credentials['password'],
                                     'confirm_password': signup_credentials['password']
-                                    }, follow=True)
+                                    }, follow=True, secure=True)
         #check that user was signed in after creating user
         self.assertFalse(response.context['user'].is_active) # should not be logged in, because should not be signed up
         self.assertEqual(User.objects.filter(username = signup_credentials['username']).count(), 1, yellow("Signup-view should not have created a new user with an existing username"))
@@ -149,7 +156,7 @@ class SignUpViewTest(TestCase):
     #test that signup is not possible with no password
     def test_signup_not_possible_with_no_password(self):
         signup_credentials2 = {'username':"pauldenton@unatco.gov", 'password': "chameleon"}
-        response = self.client.post('/logout/', follow=True)
+        response = self.client.post('/logout/', follow=True, secure=True)
         self.assertFalse(response.context['user'].is_active) #logging oput user before signing up again
 
         #same credentials as before
@@ -157,7 +164,7 @@ class SignUpViewTest(TestCase):
                                     'username': signup_credentials2['username'],
                                     'password': '',
                                     'confirm_password': ''
-                                    }, follow=True)
+                                    }, follow=True, secure=True)
         #check that user was signed in after creating user
         self.assertFalse(response.context['user'].is_active) # should not be logged in, because should not be signed up
         self.assertEqual(User.objects.filter(username = signup_credentials2['username']).count(), 0, yellow("Signup-view should not have created a new user when no password was provided"))
@@ -168,7 +175,7 @@ class SignUpViewTest(TestCase):
     #test that signup is not possible non-matching password
     def test_signup_not_possible_with_non_matching_passwords(self):
         signup_credentials2 = {'username':"pauldenton@unatco.gov", 'password': "chameleon"}
-        response = self.client.post('/logout/', follow=True)
+        response = self.client.post('/logout/', follow=True, secure=True)
         self.assertFalse(response.context['user'].is_active) #logging oput user before signing up again
 
         #same credentials as before
@@ -176,7 +183,7 @@ class SignUpViewTest(TestCase):
                                     'username': signup_credentials2['username'],
                                     'password': signup_credentials2['password'],
                                     'confirm_password': 'jcpassword'
-                                    }, follow=True)
+                                    }, follow=True, secure=True)
         #check that user was signed in after creating user
         self.assertFalse(response.context['user'].is_active) # should not be logged in, because should not be signed up
         self.assertEqual(User.objects.filter(username = signup_credentials2['username']).count(), 0, yellow("Signup-view should not have created a new user when non-matching passwords was provided"))
@@ -206,11 +213,11 @@ class LoginViewTest(TestCase):
             'password': 'johnpassword'
             }
         #Login
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
         #check that it worked
         self.assertTrue(response.context['user'].is_active)
         #try go to login page again
-        response = self.client.get('/login/', follow=True)
+        response = self.client.get('/login/', follow=True, secure=True)
         messages = list(response.context['messages'])
 
         #check for logged in message
@@ -223,7 +230,7 @@ class LoginViewTest(TestCase):
     ### TESTS FOR GET ###
     def test_correct_form_and_template_is_used(self):
         ''' Test that a GET request is met with the correct form and template '''
-        response = self.client.get('/login/', follow=True)
+        response = self.client.get('/login/', follow=True, secure=True)
         received_form = response.context['form']
         #print(response.context)
         my_message = yellow('LoginViewTest: %s was not the expected object'% (received_form))
@@ -239,7 +246,7 @@ class LoginViewTest(TestCase):
             'password': 'johnpassword'
             }
         #user = User.objects.get(username='lennon@thebeatles.com')
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
         # should be logged in now
         my_message = yellow('LoginViewTest: User was not logged in as expected')
         self.assertTrue(response.context['user'].is_active, my_message)
@@ -262,7 +269,7 @@ class LoginViewTest(TestCase):
             'username': 'lennon@thebeatles.com', #existing
             'password': 'elvispassword' #wrong
             }
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
         # should NOT be logged in now
         my_message = yellow('LoginViewTest: User was logged in mysteriously, despite submitting the wrong password')
         self.assertFalse(response.context['user'].is_active, my_message)
@@ -295,12 +302,12 @@ class LogoutViewTest(TestCase):
             'password': 'johnpassword'
             }
         #Login
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
         #check that it worked
         my_message = yellow('TestLogoutView: User was supposed to be logged in' )
         self.assertTrue(response.context['user'].is_active, my_message)
         #try logout
-        response = self.client.get('/logout/', follow=True)
+        response = self.client.get('/logout/', follow=True, secure=True)
         my_message = yellow('TestLogoutView: User was supposed to be logged out after visiting /logout/' )
         self.assertFalse(response.context['user'].is_active, my_message)
         my_message = 'TestLogoutView: After logout user was supposed to find a different template.'
@@ -325,12 +332,12 @@ class ChangePasswordViewTest(TestCase):
     def test_that_login_is_required(self):
 
         #Test that login is required
-        response = self.client.get('/change-password/', follow=True)
+        response = self.client.get('/change-password/', follow=True, secure=True)
         my_message = yellow('ChangePasswordViewTest: anonymous users should be redirected when attempting to GET at this address')
-        self.assertRedirects(response, '/login/?next=/change-password/', 302, 200, msg_prefix=my_message)
-        response = self.client.post('/change-password/', follow=True)
+        self.assertRedirects(response, 'https://testserver/login/?next=/change-password/', 302, 200, msg_prefix=my_message)
+        response = self.client.post('/change-password/', follow=True, secure=True)
         my_message = yellow('ChangePasswordViewTest: anonymous users should be redirected when attempting to POST to this address')
-        self.assertRedirects(response, '/login/?next=/change-password/', 302, 200, msg_prefix=my_message)
+        self.assertRedirects(response, 'https://testserver/login/?next=/change-password/', 302, 200, msg_prefix=my_message)
 
     def test_get_requests(self):
         #correct credentials
@@ -339,14 +346,14 @@ class ChangePasswordViewTest(TestCase):
             'password': 'johnpassword'
             }
         #Login
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
 
         #check that it worked
         my_message = yellow('ChangePasswordViewTest: User was supposed to be logged in' )
         self.assertTrue(response.context['user'].is_active, my_message)
 
         #Test GET works
-        response = self.client.get('/change-password/', follow=True)
+        response = self.client.get('/change-password/', follow=True, secure=True)
 
         ##correct template
         my_message = yellow('ChangePasswordViewTest: Should use template "change_password_form.html".')
@@ -363,7 +370,7 @@ class ChangePasswordViewTest(TestCase):
             'password': 'johnpassword'
             }
         #Login
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
 
         #check that it worked
         my_message = yellow('ChangePasswordViewTest: User was supposed to be logged in' )
@@ -371,7 +378,7 @@ class ChangePasswordViewTest(TestCase):
 
         ###Test POST works
         #wrong input in all fields
-        response = self.client.post('/change-password/', {'old_password': "", 'new_password': "", 'confirm_new_password': ""}, follow=True)
+        response = self.client.post('/change-password/', {'old_password': "", 'new_password': "", 'confirm_new_password': ""}, follow=True, secure=True)
         my_message = yellow('ChangePasswordViewTest: %s should be an instance of ChangePasswordForm.'%(response.context['form']))
         received_form = response.context['form']
         self.assertIsInstance(received_form, ChangePasswordForm, my_message)
@@ -379,7 +386,7 @@ class ChangePasswordViewTest(TestCase):
         self.assertTemplateUsed(response, 'change_password_form.html', my_message)
 
         #correct input in all fields
-        response = self.client.post('/change-password/', {'old_password': "johnpassword", 'new_password': "newjohnpassword", 'confirm_new_password': "newjohnpassword"}, follow=True)
+        response = self.client.post('/change-password/', {'old_password': "johnpassword", 'new_password': "newjohnpassword", 'confirm_new_password': "newjohnpassword"}, follow=True, secure=True)
         my_message = yellow('ChangePasswordViewTest: %s should exist.'%(response.context['form']))
         received_form = response.context['form']
         self.assertIsInstance(received_form, ChangePasswordForm, my_message)
@@ -398,7 +405,7 @@ class ChangePasswordViewTest(TestCase):
         self.assertTrue(response.context['user'].check_password('newjohnpassword'), my_message)
 
         #Are passwords incorrectly updated when you provide the wrong passowrd?
-        response = self.client.post('/change-password/', {'old_password': "ggg", 'new_password': "ejpassword", 'confirm_new_password': "ejpassword"}, follow=True)
+        response = self.client.post('/change-password/', {'old_password': "ggg", 'new_password': "ejpassword", 'confirm_new_password': "ejpassword"}, follow=True, secure=True)
         my_message = yellow('ChangePasswordViewTest: password should NOT be changed.')
         self.assertFalse(response.context['user'].check_password('ejpassword'), my_message)
         self.assertTrue(response.context['user'].check_password('newjohnpassword'), my_message)
@@ -421,12 +428,12 @@ class EditAccountViewTest(TestCase):
     #Test that anonymous users are redirected to login
     def test_anonymous_users(self):
         #Test that anonymous users are redirected properly
-        response = self.client.get('/edit-account/', follow=True)
+        response = self.client.get('/edit-account/', follow=True, secure=True)
         my_message = yellow('EditAccountViewTest: anonymous users should be redirected when attempting to GET at this address')
-        self.assertRedirects(response, '/login/?next=/edit-account/', 302, 200, msg_prefix=my_message)
-        response = self.client.post('/edit-account/', follow=True)
+        self.assertRedirects(response, 'https://testserver/login/?next=/edit-account/', 302, 200, msg_prefix=my_message)
+        response = self.client.post('/edit-account/', follow=True, secure=True)
         my_message = yellow('EditAccountViewTest: anonymous users should be redirected when attempting to POST to this address')
-        self.assertRedirects(response, '/login/?next=/edit-account/', 302, 200, msg_prefix=my_message)
+        self.assertRedirects(response, 'https://testserver/login/?next=/edit-account/', 302, 200, msg_prefix=my_message)
 
     #Test loggeed in users are shown proper page
     def test_authenitcated_users_can_visit_site(self):
@@ -436,12 +443,12 @@ class EditAccountViewTest(TestCase):
             'username': 'macgyver@phoenix.com',
             'password': 'anguspassword'
             }
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
         #check that it worked
         self.assertTrue(response.context['user'].is_active)
 
         ##tests
-        response = self.client.get('/edit-account/', follow=True)
+        response = self.client.get('/edit-account/', follow=True, secure=True)
         self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
         self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
 
@@ -452,13 +459,13 @@ class EditAccountViewTest(TestCase):
             'username': 'macgyver@phoenix.com',
             'password': 'anguspassword'
             }
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
 
         #check that it worked
         self.assertTrue(response.context['user'].is_active)
 
         #Tests
-        response = self.client.post('/edit-account/', {'username': 'am@phoenix.com'}, follow=True)
+        response = self.client.post('/edit-account/', {'username': 'am@phoenix.com'}, follow=True, secure=True)
         self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
         self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
         users_w_uname = User.objects.filter(username = 'am@phoenix.com').count()
@@ -472,13 +479,13 @@ class EditAccountViewTest(TestCase):
             'username': 'macgyver@phoenix.com',
             'password': 'anguspassword'
             }
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
 
         #check that it worked
         self.assertTrue(response.context['user'].is_active)
 
         #Tests
-        response = self.client.post('/edit-account/', {'username': self.credentials['username']}, follow=True)
+        response = self.client.post('/edit-account/', {'username': self.credentials['username']}, follow=True, secure=True)
         self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
         self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
         self.assertContains(response, 'Your email is already set to', msg_prefix=yellow("EditAccountViewTest: expected error message containing \'Your email is already set to\'"))
@@ -490,13 +497,14 @@ class EditAccountViewTest(TestCase):
             'username': 'macgyver@phoenix.com',
             'password': 'anguspassword'
             }
-        response = self.client.post('/login/', self.credentials, follow=True)
+        response = self.client.post('/login/', self.credentials, follow=True, secure=True)
 
         #check that it worked
         self.assertTrue(response.context['user'].is_active)
 
         #Tests
-        response = self.client.post('/edit-account/', {'username': 'thornton@phoenix.com'}, follow=True)
+        response = self.client.post('/edit-account/', {'username': 'thornton@phoenix.com'}, follow=True, secure=True)
         self.assertTemplateUsed(response, 'edit_account_form.html', yellow('EditAccountViewTest: Expected edit_account_form.html template to be used.'))
         self.assertIsInstance(response.context['form'], EditAccountForm, yellow('EditAccountViewTest: Expected EditAccountForm to be used.'))
         self.assertContains(response, 'A user with the email already exist', msg_prefix=yellow("EditAccountViewTest: expected error message containing \'A user with the email already exist\'"))
+        #print(response.content)
