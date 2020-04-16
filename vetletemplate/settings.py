@@ -153,6 +153,7 @@ SESSION_COOKIE_SECURE = True
 X_FRAME_OPTIONS = 'DENY'
 ##To enable testing in local env run: export DJANGO_SECURE_SSL_REDIRECT=False
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', True)
+SECURE_BROWSER_XSS_FILTER = True
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
