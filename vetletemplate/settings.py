@@ -151,6 +151,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 X_FRAME_OPTIONS = 'DENY'
+SECURE_SSL_REDIRECT = True # os.environ.get('DJANGO_DEBUG_SECURE_SSL_REDIRECT', '') != 'False'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
