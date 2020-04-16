@@ -1,11 +1,10 @@
 ##Vetletemplate:
 
-add plans to sign-up-process
-set up basic email
-email-integration and password reset
-chat-box
+
 
 ##MeAndMyTeam
+
+add plans to sign-up-process
 
 #programming
 #Product #1
@@ -25,6 +24,9 @@ add about us explaining scientific background of test (if any...)
 #external services
 pick and connect domain
 
+set up basic email
+email-integration and password reset
+chat-box
 stripe-integration
 SEO?
 Google ads
