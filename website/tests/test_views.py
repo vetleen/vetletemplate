@@ -13,11 +13,11 @@ def yellow(message):
     return '\n' + '\033[1;33;40m ' + message + '\x1b[0m'
 
 ##Why do tests top working when i set the SECURE_SSL_REDIRECT-setting
-import os
-from django.conf import settings
-
-print ('OS says redirect: %s'%(os.environ.get('DJANGO_SECURE_SSL_REDIRECT', "fuzzballs")))
-print ('Django says redirect: %s'%(settings.SECURE_SSL_REDIRECT))
+#import os
+#from django.conf import settings
+#
+#print ('OS says redirect: %s'%(os.environ.get('DJANGO_SECURE_SSL_REDIRECT', "fuzzballs")))
+#print ('Django says redirect: %s'%(settings.SECURE_SSL_REDIRECT))
 
 
 # Create your tests here.
