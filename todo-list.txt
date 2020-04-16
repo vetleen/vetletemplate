@@ -1,13 +1,15 @@
 ##Vetletemplate:
 
-
-NO NEW TASKS??
+add plans to sign-up-process
+set up basic email
+email-integration and password reset
+chat-box
 
 ##MeAndMyTeam
 
 #programming
+#Product #1
 add product model and related view logic
-add plans to sign-up-process
 add support for manually adding employees
 add data visuallization on web
 add report-generator (I see there are heroku addons for html->pdf)
@@ -22,10 +24,8 @@ add about us explaining scientific background of test (if any...)
 
 #external services
 pick and connect domain
-set up basic email
-email-integration and password reset
-chat-box
+
 stripe-integration
 SEO?
 Google ads
-get someone to check that deploy is good
+Get someone top help get tests to work on Heorku CI (step 1 - is app.json correct)
