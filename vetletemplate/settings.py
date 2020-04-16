@@ -148,16 +148,16 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ## READY FOR PRODUCTION? ##
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-X_FRAME_OPTIONS = 'DENY'
+#CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+#X_FRAME_OPTIONS = 'DENY'
 ##To enable testing in local env run: export DJANGO_SECURE_SSL_REDIRECT=False
-SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', True)
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF= True
-SECURE_HSTS_SECONDS=3600 # When certain this does not break anything set to 31536000 which is one year // If it DOES break somehting, set it to 0, wait an hour+, and it should be fixed
-SECURE_HSTS_INCLUDE_SUBDOMAINS=True
-SECURE_HSTS_PRELOAD=True
+#SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', True)
+#SECURE_BROWSER_XSS_FILTER = True
+#SECURE_CONTENT_TYPE_NOSNIFF= True
+#SECURE_HSTS_SECONDS=3600 # When certain this does not break anything set to 31536000 which is one year // If it DOES break somehting, set it to 0, wait an hour+, and it should be fixed
+#SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+#SECURE_HSTS_PRELOAD=True
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
