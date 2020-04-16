@@ -150,7 +150,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 ## READY FOR PRODUCTION? ##
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-
+X_FRAME_OPTIONS = 'DENY'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
