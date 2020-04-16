@@ -127,8 +127,7 @@ USE_TZ = True
 LOGIN_URL = reverse_lazy('loginc')
 
 LOGIN_REDIRECT_URL = '/'
-#CSRF_COOKIE_SECURE = True
-#SESSION_COOKIE_SECURE = True
+
 
 # Heroku: Update database configuration from $DATABASE_URL.
 import dj_database_url
@@ -147,6 +146,11 @@ STATIC_URL = '/static/'
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+## READY FOR PRODUCTION? ##
+CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
