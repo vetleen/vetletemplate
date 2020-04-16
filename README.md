@@ -21,8 +21,8 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 -> README (not stricly neccessary)
 -> wsgi.py
 -> urls.py
--> settings.py 
--> asgi.py 
+-> settings.py
+-> asgi.py
 -> Procfile
 -> manage.py
 -> bunch of stuff in __pycache__ (I deleted it, although I don't know if this is required)
@@ -45,6 +45,7 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - try to sign up, log out, log in, change password and change user details.
 - heroku run python manage.py createsuperuser
 - try /admin/
+- set environment variable DJANGO_DEBUG to false
+- set environment variable DJANGO_SECRET_KEY to a new secret key
 
 #have fun creating your next project!
-
