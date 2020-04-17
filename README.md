@@ -18,7 +18,8 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 
 #change the vetletemplate name
 - change the name everywhere it appears
-- grep -nir vetletemplate to find those places
+-> first rename the project folder
+-> the run "grep -nir vetletemplate" to find in-file occurences, and change those
 - should be:
 -> README (not stricly neccessary)
 -> wsgi.py
