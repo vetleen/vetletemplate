@@ -1,6 +1,9 @@
 from django.urls import path
 from . import views
 
+import os
+from django.conf import settings
+
 print ('OS says: %s'%(os.environ.get('CSRF_COOKIE_SECURE', "fuzzballs")))
 print ('Django says: %s'%(settings.CSRF_COOKIE_SECURE))
 print ('')
