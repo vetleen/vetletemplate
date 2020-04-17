@@ -36,6 +36,7 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - open http://127.0.0.1:8000/ in browser and it should work
 
 #get onto heroku
+#alternative 1
 - have heroku installed (> snap install heroku --classic)
 - heroku login
 - heroku create desiredappname
@@ -48,5 +49,16 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - try to sign up, log out, log in, change password and change user details.
 - heroku run python manage.py createsuperuser
 - try /admin/
+
+#alternative 2
+- make sure your new repo is up top date on github
+- log in to github dashboard on their website
+- create a new app
+- (onnect github to heroku if you havent already)
+- go to deploy banner
+- choose github and choose the correct repo
+- choose master branch and choose automatic deploys
+- go to bottom and click the deploy button
+- set environment variables (at least DJANGO_DEBUG and DJANGO_SECRET_KEY)
 
 #have fun creating your next project!
