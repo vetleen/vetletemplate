@@ -11,7 +11,7 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - python manage.py makemigrations (should give no changes messages)
 - python manage.py migrate
 - python manage.py collectstatic (so we can run tests)
-- python manage.py test (should not fail)
+- python manage.py test (right now you need to remove https://testserver from the tests)
 - python manage.py runserver
 - open http://127.0.0.1:8000/ in browser and it should work
 
