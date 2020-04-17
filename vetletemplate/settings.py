@@ -148,18 +148,16 @@ STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ## READY FOR PRODUCTION? ##
-#CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', True)
-#SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', True)
-#X_FRAME_OPTIONS = os.environ.get('X_FRAME_OPTIONS', 'DENY') #'DENY'
+#CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', False)
+#SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', False)
+#X_FRAME_OPTIONS = os.environ.get('X_FRAME_OPTIONS', 'SAMEORIGIN') #'SAMEORIGIN' or 'DENY'
 
-#SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', True)
-#SECURE_BROWSER_XSS_FILTER = os.environ.get('SECURE_BROWSER_XSS_FILTER', True)
-#SECURE_CONTENT_TYPE_NOSNIFF= os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', True)
-#SECURE_HSTS_SECONDS= os.environ.get('SECURE_HSTS_SECONDS', 0)#3600 # When certain this does not break anything set to 31536000 which is one year // If it DOES break somehting, set it to 0, wait an hour+, and it should be fixed
-#SECURE_HSTS_INCLUDE_SUBDOMAINS=os.environ.get('SECURE_HSTS_INCLUDE_SUBDOMAINS', False)
-#SECURE_HSTS_PRELOAD=os.environ.get('SECURE_HSTS_PRELOAD', False)
+#SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', False)
+#SECURE_BROWSER_XSS_FILTER = os.environ.get('SECURE_BROWSER_XSS_FILTER', False)
+#SECURE_CONTENT_TYPE_NOSNIFF= os.environ.get('SECURE_CONTENT_TYPE_NOSNIFF', False)
 
-##Made a mistake? Chrome:
+
+##Made a mistake? This MAY help. Chrome:
 #In the address bar, type “chrome://net-internals/#hsts”.
 #Type the domain name in the text field below “Delete domain”.
 #Click the “Delete” button.

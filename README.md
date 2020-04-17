@@ -10,7 +10,7 @@ My personal Django/bootstrap for Heroku ready-to-go out-of-the-box repo
 - pip install -r requirements.txt (should have python installed)
 - python manage.py makemigrations (should give no changes messages)
 - python manage.py migrate
-- python mange.py collectstatic (so we can run tests)
+- python manage.py collectstatic (so we can run tests)
 - set environment variable DJANGO_SECURE_SSL_REDIRECT=False (if it's True, tests don't work). Alternatively, you can update settings.py to set SECURE_SSL_REDIRECT=False, when you are running tests.
 - python manage.py test (should not fail)
 - python manage.py runserver
